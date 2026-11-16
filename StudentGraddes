@@ -1,0 +1,110 @@
+package student;
+
+import java.util.Arrays;
+
+// تعريف تخصص الطالب
+enum Major {
+	CS, IT, COE, SWE, SYS, AI
+}
+
+public class StudentGraddes extends Student {
+
+	private Major major; // تخصص الطالب
+	private double[][] grades; // درجات الكورسات (مصفوفة ثنائية الأبعاد)
+
+	// Constructors 
+	public StudentGraddes() {
+		super();
+	}
+
+	// Constructors 
+	public StudentGraddes(String ID, String name, Mentor mentor, Major major, double[][] grades) {
+		super(ID, name, mentor);
+		this.major = major;
+		this.grades = grades;
+	}
+
+	// Setter / Getter 
+	public void setMajor(String major) {
+		this.major = Major.valueOf(major);
+	}
+
+	public Major getMajor() {
+		return major;
+	}
+
+	// Setter / Getter 
+	public void setGrades(double[][] grades) {
+		this.grades = grades;
+	}
+
+	public double[][] getGrades() {
+		return grades;
+	}
+
+	// Method  إضافة درجة لكورس محدد
+	public void addGrade(int courseIndex, double grade) {
+		if (grades[courseIndex] == null) { // إذا الصف فارغ، نضيف الدرجة مباشرة
+			grades[courseIndex] = new double[] { grade };
+		} else { // إذا الصف فيه درجات مسبقًا، نضيف الدرجة في آخر المصفوفة
+			double[] newGrades = new double[grades[courseIndex].length + 1];
+			for (int i = 0; i < grades[courseIndex].length; i++)
+				newGrades[i] = grades[courseIndex][i];
+			newGrades[newGrades.length - 1] = grade;
+			grades[courseIndex] = newGrades;
+		}
+	}
+
+	// Method  ترتيب درجات الكورس تصاعديًا
+	public void sortGrades(int courseIndex) {
+		if (grades != null && courseIndex >= 0 && courseIndex < grades.length && grades[courseIndex] != null)
+			Arrays.sort(grades[courseIndex]);
+	}
+
+	// Method recursion 
+	public double sumGrades(double[][] arr, int row, int col) {
+		if (row >= arr.length)
+			return 0; // شرط التوقف
+
+		if (arr[row] == null || col >= arr[row].length)
+			return sumGrades(arr, row + 1, 0); // الانتقال للصف التالي
+
+		return arr[row][col] + sumGrades(arr, row, col + 1);
+	}
+
+	// Method التحقق إذا الكورس ناجح أو راسب
+	public boolean isPass(int courseIndex) {
+		if (grades == null || courseIndex < 0 || courseIndex >= grades.length || grades[courseIndex] == null)
+			return false;
+
+		double sum = 0;
+		for (double g : grades[courseIndex])
+			sum += g;
+
+		// إذا مجموع درجات الكورس اكبر او يساوي 60 = Pass
+		return sum >= 60;
+	}
+
+	// تبحث عن درجة 100
+	public void search100() {
+		for (int i = 0; i < getCourses().size(); i++) {
+			if (grades[i] != null) {
+				for (double g : grades[i]) {
+					if (g == 100) {
+						System.out.println("Grade 100 found in course " + getCourses().get(i));
+						break; // يكفي طباعة مرة واحدة لكل كورس
+					}
+				}
+			}
+		}
+	}
+
+	// ToString 
+	@Override
+	public String toString() {
+		String result = super.toString();
+		result += "\nMajor: " + major;
+		return result;
+	}
+
+}
