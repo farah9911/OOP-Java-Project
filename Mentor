@@ -1,0 +1,43 @@
+package student;
+
+public class Mentor {
+	private String name; // اسم المشرف
+	private String department; // قسم المشرف
+
+	// Constructor
+	public Mentor(String name, String department) {
+		this.name = name;
+		this.department = department;
+	}
+
+	// Constructor
+	public Mentor() {
+		this.name = null;
+		this.department = null;
+	}
+
+	// Setter Getter
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	// Setter Getter
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	// ToString
+	@Override
+	public String toString() {
+		return "Mentor: " + name +
+			    "\nDept: " + department;
+	}
+}
