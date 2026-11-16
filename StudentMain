@@ -1,0 +1,197 @@
+package student;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class StudentMain {
+
+	public static void main(String[] args) {
+
+		Scanner keyboard = new Scanner(System.in);
+		StudentGraddes s1 = new StudentGraddes();
+
+		Login login = new Login();
+		if (!login.login()) {
+			System.out.println("Exiting program...");
+			return;
+		}
+		System.out.println("Welcome!");
+
+		boolean exit = false;
+
+		while (!exit) {
+			System.out.println("\n... Student Information System Menu ...");
+			System.out.println("1. Enter Student Info");
+			System.out.println("2. Add Courses & Grades");
+			System.out.println("3. Enter Mentor Info");
+			System.out.println("4. Display Student Info");
+			System.out.println("5. Save to File");
+			System.out.println("6. Read File");
+			System.out.println("7. Exit");
+			System.out.print("Enter your Choice: ");
+
+			int choice = keyboard.nextInt();
+			keyboard.nextLine();
+
+			switch (choice) {
+			case 1:
+				System.out.print("Enter Your ID number : ");
+				s1.setID(keyboard.nextLine());
+
+				System.out.print("Enter Your Name: ");
+				s1.setName(keyboard.nextLine());
+
+				String major;
+				do {
+					System.out.print("Enter Student Major (CS, IT, COE, SWE, SYS, AI): ");
+					major = keyboard.nextLine().toUpperCase();
+				} while (!Arrays.asList("CS", "IT", "COE", "SWE", "SYS", "AI").contains(major));
+				s1.setMajor(major);
+				break;
+
+			case 2:
+				System.out.print("Number of courses: ");
+				int numCourses = keyboard.nextInt();
+				keyboard.nextLine();
+
+				if (numCourses > 0) {
+					s1.setGrades(new double[numCourses][]);
+
+					for (int i = 0; i < numCourses; i++) {
+						System.out.print("Enter Course " + (i + 1) + ": ");
+						s1.addCourse(keyboard.nextLine());
+
+						System.out.print("Number of grades: ");
+						int numGrades = keyboard.nextInt();
+						keyboard.nextLine();
+
+						if (numGrades < 0) {
+							System.out.println("Invalid number! Number cannot be negative.");
+							System.out.print("Number of grades: ");
+							numGrades = keyboard.nextInt();
+							keyboard.nextLine();
+						}
+
+						for (int j = 0; j < numGrades; j++) {
+							System.out.print("Enter Grade " + (j + 1) + ": ");
+							double grade = keyboard.nextDouble();
+							keyboard.nextLine();
+
+							if (grade < 0 || grade > 100) {
+								System.out.println("Invalid grade! Enter between 0 and 100.");
+								System.out.print("Enter Grade " + (j + 1) + ": ");
+								grade = keyboard.nextDouble();
+								keyboard.nextLine();
+							}
+
+							s1.addGrade(i, grade);
+						}
+					}
+				} else {
+					System.out.println("No courses entered.");
+				}
+				break;
+
+			case 3:
+				System.out.print("Enter Mentor Name: ");
+				String mName = keyboard.nextLine();
+
+				System.out.print("Enter Mentor Department: ");
+				String mDept = keyboard.nextLine();
+
+				s1.setMentor(new Mentor(mName, mDept));
+				break;
+
+			case 4:
+				System.out.println("\n... Student Info ...");
+				System.out.println(s1);
+
+				double totalAll = 0;
+				if (s1.getGrades() != null) {
+					totalAll = s1.sumGrades(s1.getGrades(), 0, 0);
+				}
+
+				System.out.println("\nGrades:");
+				for (int i = 0; i < s1.getCourses().size(); i++) {
+					if (s1.getGrades()[i] != null && s1.getGrades()[i].length > 0) {
+						double courseTotal = 0;
+						for (double g : s1.getGrades()[i])
+							courseTotal += g;
+
+						System.out.println(s1.getCourses().get(i) + ": " + Arrays.toString(s1.getGrades()[i])
+								+ " , Total: " + courseTotal + " : " + (s1.isPass(i) ? "Pass" : "Fail"));
+					} else {
+						System.out.println(s1.getCourses().get(i) + ": No grades entered yet");
+					}
+				}
+				System.out.println("\nSearch Result for grade 100 : ");
+				s1.search100();
+
+				System.out.println("\nTotal Grades (All Courses): " + totalAll);
+				break;
+
+			case 5:
+				try (FileWriter writer = new FileWriter("StudentInfo.txt")) {
+					writer.write(s1 + "\n\n");
+
+					for (int i = 0; i < s1.getCourses().size(); i++) {
+						if (s1.getGrades()[i] != null) {
+							double total = 0;
+							for (double g : s1.getGrades()[i])
+								total += g;
+							writer.write(s1.getCourses().get(i) + " : " + Arrays.toString(s1.getGrades()[i]) + " = "
+									+ (s1.isPass(i) ? "Pass" : "Fail") + ", Total: " + total + "\n");
+						} else {
+							writer.write(s1.getCourses().get(i) + ": No grades entered yet\n");
+						}
+					}
+
+					double searchGrade = 100;
+					System.out.println("\nSearch Result for grade: " + searchGrade);
+					writer.write("\nSearch Result for grade: " + searchGrade + "\n");
+
+					for (int i = 0; i < s1.getCourses().size(); i++) {
+						if (s1.getGrades()[i] != null) {
+							for (double g : s1.getGrades()[i]) {
+								if (g == searchGrade) {
+									String line = "Grade 100 found in course " + s1.getCourses().get(i) + "\n";
+									System.out.print(line);
+									writer.write(line);
+									break;
+								}
+							}
+						}
+					}
+					writer.write("\nTotal Grades: " + s1.sumGrades(s1.getGrades(), 0, 0) + "\n");
+
+					System.out.println("\nFile saved successfully!");
+				} catch (IOException e) {
+					System.out.println("Error saving file: " + e.getMessage());
+				}
+				break;
+
+			case 6:
+				try (Scanner fileReader = new Scanner(new File("StudentInfo.txt"))) {
+					System.out.println("\n.... File Content ....");
+					while (fileReader.hasNextLine()) {
+						System.out.println(fileReader.nextLine());
+					}
+				} catch (IOException e) {
+					System.out.println("Cannot read file: " + e.getMessage());
+				}
+				break;
+
+			case 7:
+				exit = true;
+				System.out.println("\nExiting Program...");
+				break;
+
+			default:
+				System.out.println("Invalid choice! Please try again.");
+			}
+		}
+	}
+}
