@@ -1,0 +1,64 @@
+package student;
+
+import java.util.ArrayList;
+
+public class Student {
+	private String ID;
+	private String Name;
+	private ArrayList<String> Courses;
+	private Mentor mentor;
+
+	public Student() {
+		this.ID = null;
+		this.Name = null;
+		this.Courses = new ArrayList<>();
+		this.mentor = null;
+	}
+
+	public Student(String ID, String Name, Mentor mentor) {
+		this.ID = ID;
+		this.Name = Name;
+		this.Courses = new ArrayList<>();
+		this.mentor = mentor;
+	}
+
+	public void setID(String ID) {
+		this.ID = ID;
+	}
+
+	public String getID() {
+		return ID;
+	}
+
+	public void setName(String Name) {
+		this.Name = Name;
+	}
+
+	public String getName() {
+		return Name;
+	}
+
+	public ArrayList<String> getCourses() {
+		return Courses;
+	}
+
+	public void addCourse(String course) {
+		this.Courses.add(course);
+	}
+
+	public void setMentor(Mentor mentor) {
+		this.mentor = mentor;
+	}
+
+	public Mentor getMentor() {
+		return mentor;
+	}
+
+	@Override
+	public String toString() {
+		return "ID: " + ID +
+			   "\nName: " + Name +
+			   "\nCourses: " + Courses +
+		       "\nMentor: " + mentor;
+	}
+}
